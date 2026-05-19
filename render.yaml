@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: sentinel-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false        # set in Render dashboard
+      - key: JWT_SECRET
+        sync: false        # set in Render dashboard
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLIENT_URL
+        sync: false        # set in Render dashboard — your Netlify URL
+      - key: SMS_PROVIDER
+        value: twilio
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_FROM
+        value: "whatsapp:+14155238886"
+      - key: TWILIO_DEFAULT_COUNTRY_CODE
+        value: "91"
+      - key: TWILIO_CONTENT_SID
+        sync: false
+      - key: LOG_LEVEL
+        value: info

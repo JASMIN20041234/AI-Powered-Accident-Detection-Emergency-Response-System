@@ -19,25 +19,40 @@ async function run() {
       console.log(`  ✓ ${file}`);
     }
 
-    // Seed/repair the demo admin so the documented credentials always work.
-    const defaultAdminPassword = process.env.DEFAULT_ADMIN_PASSWORD || 'sentinel';
-    const hash = await bcrypt.hash(defaultAdminPassword, 12);
-    const existingAdmin = await client.query(`SELECT id FROM users WHERE username = 'admin'`);
-    await client.query(
-      `INSERT INTO users (username, email, password_hash, role)
-       VALUES ('admin', 'admin@sentinel.local', $1, 'admin')
-       ON CONFLICT (username) DO UPDATE
-       SET email = EXCLUDED.email,
-           password_hash = EXCLUDED.password_hash,
-           role = EXCLUDED.role,
-           updated_at = NOW()`,
-      [hash]
+    // Seed/repair the admin user — credentials come from .env only, never hardcoded.
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminEmail    = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+
+    if (!adminUsername || !adminEmail || !adminPassword) {
+      throw new Error('ADMIN_USERNAME, ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env');
+    }
+
+    const hash = await bcrypt.hash(adminPassword, 12);
+
+    // Try to update an existing admin-role row (handles username rename gracefully).
+    // If none exists yet, insert fresh.
+    const updated = await client.query(
+      `UPDATE users
+          SET username = $1, email = $2, password_hash = $3, updated_at = NOW()
+        WHERE role = 'admin'
+        RETURNING id`,
+      [adminUsername, adminEmail, hash]
     );
 
-    console.log(`\nDefault admin user ${existingAdmin.rows.length === 0 ? 'created' : 'updated'}:`);
-    console.log('  username: admin');
-    console.log(`  password: ${defaultAdminPassword}`);
-    console.log('  Change this password in production!\n');
+    let action = 'updated';
+    if (updated.rowCount === 0) {
+      await client.query(
+        `INSERT INTO users (username, email, password_hash, role)
+         VALUES ($1, $2, $3, 'admin')`,
+        [adminUsername, adminEmail, hash]
+      );
+      action = 'created';
+    }
+
+    console.log(`\nAdmin user ${action}:`);
+    console.log(`  username: ${adminUsername}`);
+    console.log(`  email:    ${adminEmail}\n`);
 
     console.log('Migrations complete.');
   } finally {

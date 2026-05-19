@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Environment and local secrets
+.env
+.env.*
+
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime/cache/temp files
+.tmp/
+tmp/
+temp/
+.cache/
+.vite/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local database/data dumps
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+
+# Generated media/artifacts
+*.pid
+*.seed
+*.tsbuildinfo

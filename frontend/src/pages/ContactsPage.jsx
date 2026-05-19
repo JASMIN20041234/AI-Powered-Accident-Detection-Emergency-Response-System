@@ -7,6 +7,9 @@ import Btn from '../components/ui/Btn';
 import Toast from '../components/ui/Toast';
 import useToast from '../hooks/useToast';
 
+const SMS_PROVIDER = (import.meta.env.VITE_SMS_PROVIDER || 'twilio').toLowerCase();
+const SMS_PROVIDER_LABEL = SMS_PROVIDER === 'twilio' ? 'Twilio WhatsApp' : 'CallMeBot';
+
 export default function ContactsPage({ contacts, onContactsChange }) {
   const [modal, setModal] = useState(undefined); // undefined=closed | null=new | obj=edit
   const { toast, show }   = useToast();
@@ -18,7 +21,7 @@ export default function ContactsPage({ contacts, onContactsChange }) {
   }
 
   async function handleTest(c) {
-    if (!c.callmebot_apikey) { show('No API key set for this contact'); return; }
+    if (SMS_PROVIDER !== 'twilio' && !c.callmebot_apikey) { show('No API key set for this contact'); return; }
     show(`Sending test to ${c.name}…`);
     try {
       const { data } = await incidentsApi.testSend(c.phone, c.callmebot_apikey);
@@ -33,7 +36,7 @@ export default function ContactsPage({ contacts, onContactsChange }) {
           <h1 className="font-serif font-normal text-[38px] tracking-tight leading-none">
             Emergency <em className="italic text-accent not-italic">contacts</em>.
           </h1>
-          <p className="text-ink-f text-[11px] tracking-[0.2em] uppercase mt-2">Each contact needs a CallMeBot API key for auto-dispatch</p>
+          <p className="text-ink-f text-[11px] tracking-[0.2em] uppercase mt-2">Auto-dispatch through {SMS_PROVIDER_LABEL}</p>
         </div>
         <Btn onClick={() => setModal(null)}>+ Add Contact</Btn>
       </div>

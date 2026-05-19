@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const NAV = [
   { to: '/',          label: 'Dashboard',    end: true },
@@ -17,6 +18,7 @@ const GPS_DOT = {
 
 export default function TopBar({ gpsStatus }) {
   const { user, logout } = useAuth();
+  const { theme, toggle } = useTheme();
   const navigate = useNavigate();
 
   return (
@@ -42,6 +44,16 @@ export default function TopBar({ gpsStatus }) {
       <div className="flex items-center gap-3 text-ink-dim text-[11px] tracking-[0.1em] uppercase">
         <span className={`w-2 h-2 rounded-full ${GPS_DOT[gpsStatus] || GPS_DOT.pending}`} />
         <span>{user?.username} · Online</span>
+
+        {/* Dark / Light toggle */}
+        <button
+          onClick={toggle}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          className="w-8 h-8 flex items-center justify-center rounded border border-line-s bg-transparent hover:bg-panel transition-colors cursor-pointer text-base"
+        >
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
+
         <button
           onClick={() => { logout(); navigate('/login'); }}
           className="px-3 py-2 text-[11px] tracking-[0.15em] uppercase font-mono border border-line-s rounded bg-transparent text-ink hover:bg-panel-2 hover:text-accent transition-colors cursor-pointer"

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const CIRC     = 439.82;
 const DURATION = 30;
@@ -7,19 +7,29 @@ export default function AlertOverlay({ event, location, contacts, onCancel, onEx
   const [remaining, setRemaining] = useState(DURATION);
   const [offset, setOffset]       = useState(0);
 
+  // Keep a ref so the expiry effect always calls the latest onExpired
+  // without needing it as a dependency (avoids stale-closure issues)
+  const onExpiredRef = useRef(onExpired);
+  useEffect(() => { onExpiredRef.current = onExpired; });
+
   useEffect(() => {
     setRemaining(DURATION);
     requestAnimationFrame(() => setOffset(CIRC));
 
     const id = setInterval(() => {
       setRemaining((r) => {
-        if (r <= 1) { clearInterval(id); onExpired(); return 0; }
+        if (r <= 1) { clearInterval(id); return 0; }
         return r - 1;
       });
     }, 1000);
 
     return () => clearInterval(id);
   }, []);
+
+  // Fire onExpired AFTER render completes — never inside a state updater
+  useEffect(() => {
+    if (remaining === 0) onExpiredRef.current();
+  }, [remaining]);
 
   const readyCount = contacts.filter((c) => c.callmebot_apikey).length;
 

@@ -1,12 +1,15 @@
 /**
  * Telemetry controller — receives sensor data from ESP32/GPS/GSM hardware.
- * When g-force exceeds the threshold, an incident is created automatically.
+ * When g-force exceeds the threshold, an incident is created and WhatsApp
+ * alerts are dispatched automatically without waiting for operator input.
  */
-const DeviceModel   = require('../models/device.model');
-const IncidentModel = require('../models/incident.model');
-const asyncHandler  = require('../utils/asyncHandler');
-const logger        = require('../utils/logger');
-const { emitToUser } = require('../sockets');
+const DeviceModel            = require('../models/device.model');
+const IncidentModel          = require('../models/incident.model');
+const ContactModel           = require('../models/contact.model');
+const NotificationService    = require('../services/notification.service');
+const asyncHandler           = require('../utils/asyncHandler');
+const logger                 = require('../utils/logger');
+const { emitToUser }         = require('../sockets');
 
 const IMPACT_THRESHOLD = 2.5; // g-force
 
@@ -60,6 +63,21 @@ const receive = asyncHandler(async (req, res) => {
     });
 
     logger.warn(`Hardware impact: device=${device_id} mag=${magnitude.toFixed(2)}g — incident ${incident.id} created`);
+
+    // Auto-dispatch WhatsApp alerts — no operator present to click "dispatch"
+    setImmediate(async () => {
+      try {
+        const contacts = await ContactModel.findAllByUser(device.user_id);
+        if (contacts.length === 0) {
+          logger.warn(`Incident ${incident.id}: no contacts registered for user ${device.user_id} — skipping dispatch`);
+          return;
+        }
+        await NotificationService.dispatch({ incident, contacts, userId: device.user_id });
+        logger.info(`Incident ${incident.id}: auto-dispatch complete to ${contacts.length} contact(s)`);
+      } catch (err) {
+        logger.error(`Incident ${incident.id}: auto-dispatch failed — ${err.message}`);
+      }
+    });
   }
 
   res.json({

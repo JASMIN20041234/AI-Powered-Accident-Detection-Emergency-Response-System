@@ -110,9 +110,19 @@ SMS_PROVIDER=twilio
 TWILIO_ACCOUNT_SID=ACxxxxxxxxx
 TWILIO_AUTH_TOKEN=your_token
 TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
+TWILIO_DEFAULT_COUNTRY_CODE=91
+TWILIO_CONTENT_SID=HXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 No code changes needed — the notification service picks the provider from the env variable.
+
+For the frontend label, set:
+
+```env
+VITE_SMS_PROVIDER=twilio
+```
+
+When telemetry exceeds the impact threshold, the backend creates an incident and sends the registered contacts a WhatsApp template message with GPS coordinates and a Google Maps link.
 
 ## ESP32 Telemetry Payload
 

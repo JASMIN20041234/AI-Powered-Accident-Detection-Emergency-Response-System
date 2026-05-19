@@ -37,7 +37,10 @@ const dispatch = asyncHandler(async (req, res) => {
 
 const testSend = asyncHandler(async (req, res) => {
   const { phone, apikey } = req.body;
-  if (!phone || !apikey) return res.status(400).json({ error: 'phone and apikey are required' });
+  if (!phone) return res.status(400).json({ error: 'phone is required' });
+  if (process.env.SMS_PROVIDER !== 'twilio' && !apikey) {
+    return res.status(400).json({ error: 'phone and apikey are required for CallMeBot' });
+  }
   const result = await NotificationSvc.testSend({ phone, apikey });
   res.json(result);
 });

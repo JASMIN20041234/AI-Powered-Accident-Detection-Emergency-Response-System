@@ -5,6 +5,7 @@ import Field, { inputCls } from '../ui/Field';
 import Btn from '../ui/Btn';
 
 const RELS = ['Family', 'Friend', 'Spouse', 'Doctor', 'Police', 'Other'];
+const SMS_PROVIDER = (import.meta.env.VITE_SMS_PROVIDER || 'twilio').toLowerCase();
 
 export default function ContactModal({ contact, onSaved, onClose, showToast }) {
   const editing = !!contact;
@@ -31,7 +32,8 @@ export default function ContactModal({ contact, onSaved, onClose, showToast }) {
   }
 
   async function test() {
-    if (!form.phone || !form.callmebot_apikey) return showToast('Enter phone and API key to test');
+    if (!form.phone.trim()) return showToast('Enter phone number to test');
+    if (SMS_PROVIDER !== 'twilio' && !form.callmebot_apikey.trim()) return showToast('Enter phone and API key to test');
     setTesting(true);
     try {
       const { data } = await incidentsApi.testSend(form.phone, form.callmebot_apikey);
@@ -50,15 +52,22 @@ export default function ContactModal({ contact, onSaved, onClose, showToast }) {
         </div>
 
         <div className="p-[22px] overflow-y-auto space-y-1">
-          <div className="bg-bg-2 border border-line rounded p-[14px] text-[12px] leading-relaxed mb-4">
-            <p className="font-serif font-medium text-[14px] text-accent mb-2">One-time CallMeBot setup (per contact)</p>
-            <ol className="list-decimal pl-5 text-ink-dim space-y-1">
-              <li>Save <code className="bg-panel px-1 rounded text-accent font-mono">+34 644 51 95 23</code> as a phone contact</li>
-              <li>Send WhatsApp: <b className="text-ink">"I allow callmebot to send me messages"</b></li>
-              <li>Bot replies with your API key</li>
-              <li>Paste that key below</li>
-            </ol>
-          </div>
+          {SMS_PROVIDER === 'twilio' ? (
+            <div className="bg-bg-2 border border-line rounded p-[14px] text-[12px] leading-relaxed mb-4 text-ink-dim">
+              <p className="font-serif font-medium text-[14px] text-accent mb-2">Twilio WhatsApp contact</p>
+              <p>Enter the contact's WhatsApp number with country code. Sandbox recipients must first join your Twilio WhatsApp sandbox.</p>
+            </div>
+          ) : (
+            <div className="bg-bg-2 border border-line rounded p-[14px] text-[12px] leading-relaxed mb-4">
+              <p className="font-serif font-medium text-[14px] text-accent mb-2">One-time CallMeBot setup (per contact)</p>
+              <ol className="list-decimal pl-5 text-ink-dim space-y-1">
+                <li>Save <code className="bg-panel px-1 rounded text-accent font-mono">+34 644 51 95 23</code> as a phone contact</li>
+                <li>Send WhatsApp: <b className="text-ink">"I allow callmebot to send me messages"</b></li>
+                <li>Bot replies with your API key</li>
+                <li>Paste that key below</li>
+              </ol>
+            </div>
+          )}
 
           <Field label="Full name">
             <input type="text" value={form.name} onChange={set('name')} className={inputCls} />
@@ -74,9 +83,11 @@ export default function ContactModal({ contact, onSaved, onClose, showToast }) {
             <input type="text" value={form.phone} onChange={set('phone')} placeholder="e.g. 919876543210" className={inputCls} />
           </Field>
 
-          <Field label="CallMeBot API key" hint="Leave blank to skip during auto-dispatch">
-            <input type="text" value={form.callmebot_apikey} onChange={set('callmebot_apikey')} placeholder="e.g. 1234567" className={inputCls} />
-          </Field>
+          {SMS_PROVIDER !== 'twilio' && (
+            <Field label="CallMeBot API key" hint="Leave blank to skip during auto-dispatch">
+              <input type="text" value={form.callmebot_apikey} onChange={set('callmebot_apikey')} placeholder="e.g. 1234567" className={inputCls} />
+            </Field>
+          )}
         </div>
 
         <div className="flex gap-[10px] justify-end px-[22px] py-[14px] border-t border-line">

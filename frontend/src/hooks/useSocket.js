@@ -1,6 +1,8 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
 
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '/');
+
 /**
  * Connects to the SENTINEL Socket.IO server with JWT auth.
  * Returns a function to register event listeners.
@@ -15,7 +17,7 @@ export default function useSocket(userId) {
     if (!userId) return;
 
     const token = localStorage.getItem('sentinel_token');
-    socketRef.current = io('/', {
+    socketRef.current = io(SOCKET_URL, {
       auth: { token },
       transports: ['websocket'],
       reconnectionDelay: 2000,

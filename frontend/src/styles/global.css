@@ -10,9 +10,9 @@
     background-image:
       radial-gradient(at 20% 0%,   rgba(255,181,71,0.06) 0px, transparent 50%),
       radial-gradient(at 80% 100%, rgba(255,90,77,0.04)  0px, transparent 50%);
+    transition: background-color 0.2s, color 0.2s;
   }
 
-  /* Film-grain overlay */
   body::after {
     content: '';
     position: fixed; inset: 0;
@@ -26,7 +26,66 @@
   * { box-sizing: border-box; }
 }
 
-/* ─── Leaflet dark theme ──────────────────────────────────────────────────── */
+/* ─── Light mode overrides ────────────────────────────────────────────────────
+   html.light has higher specificity than the Tailwind single-class rules,
+   so no !important needed. Covers every color token used in the app.
+   ─────────────────────────────────────────────────────────────────────────── */
+html.light body {
+  background-color: #f0f0ea;
+  background-image:
+    radial-gradient(at 20% 0%,   rgba(255,181,71,0.09) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, rgba(255,90,77,0.06)  0px, transparent 50%);
+  color: #18181a;
+}
+html.light body::after { opacity: 0.015; }
+
+/* backgrounds */
+html.light .bg-bg      { background-color: #f0f0ea; }
+html.light .bg-bg-2    { background-color: #e6e6e0; }
+html.light .bg-panel   { background-color: #ffffff; }
+html.light .bg-panel-2 { background-color: #f5f5f0; }
+
+/* borders */
+html.light .border-line   { border-color: #d0d0c8; }
+html.light .border-line-s { border-color: #b8b8b0; }
+
+/* text */
+html.light .text-ink     { color: #18181a; }
+html.light .text-ink-dim { color: #52526a; }
+html.light .text-ink-f   { color: #88889a; }
+
+/* grid separators (bg-line used as gap color) */
+html.light .bg-line { background-color: #d0d0c8; }
+
+/* inputs & selects */
+html.light input,
+html.light select,
+html.light textarea {
+  background-color: #f5f5f0;
+  color: #18181a;
+  border-color: #d0d0c8;
+}
+html.light input::placeholder { color: #88889a; }
+
+/* focus rings */
+html.light input:focus,
+html.light select:focus {
+  outline-color: #ffb547;
+  border-color: #ffb547;
+}
+
+/* Leaflet */
+html.light .leaflet-container        { background: #e8e8e2 !important; }
+html.light .leaflet-popup-content-wrapper,
+html.light .leaflet-popup-tip        { background: #ffffff !important; color: #18181a !important; border-color: #d0d0c8 !important; }
+html.light .leaflet-control-zoom a   { background: #ffffff !important; color: #18181a !important; border-color: #d0d0c8 !important; }
+
+/* scrollbar */
+html.light ::-webkit-scrollbar-track { background: #e6e6e0; }
+html.light ::-webkit-scrollbar-thumb { background: #c0c0b8; }
+html.light ::-webkit-scrollbar-thumb:hover { background: #a8a8a0; }
+
+/* ─── Leaflet dark theme (default) ───────────────────────────────────────── */
 .leaflet-container {
   background: #0a0c10 !important;
   font-family: 'JetBrains Mono', ui-monospace, monospace !important;
@@ -52,18 +111,17 @@
   background: #ffb547;
   animation: live-pulse 1.4s infinite;
 }
-
 @keyframes live-pulse {
-  0%   { box-shadow: 0 0 0 0   rgba(255,181,71,0.6); }
-  70%  { box-shadow: 0 0 0 14px rgba(255,181,71,0); }
-  100% { box-shadow: 0 0 0 0   rgba(255,181,71,0); }
+  0%   { box-shadow: 0 0 0 0    rgba(255,181,71,0.6); }
+  70%  { box-shadow: 0 0 0 14px rgba(255,181,71,0);   }
+  100% { box-shadow: 0 0 0 0    rgba(255,181,71,0);   }
 }
 
 /* ─── Countdown ring ─────────────────────────────────────────────────────── */
 .countdown-fill { transition: stroke-dashoffset 1s linear; }
 
-/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
+/* ─── Scrollbar (dark default) ───────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; }
 ::-webkit-scrollbar-track { background: #0a0c10; }
 ::-webkit-scrollbar-thumb { background: #232a3d; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #2f3852; }

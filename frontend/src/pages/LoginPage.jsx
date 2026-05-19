@@ -39,7 +39,7 @@ export default function LoginPage() {
           </p>
         </div>
         <div className="relative z-10 flex justify-between text-ink-f text-[11px] uppercase tracking-[0.2em]">
-          <span>v1.0 / PERN Stack</span><span>Powered by CallMeBot</span>
+          <span>v1.0 / PERN Stack</span><span>Powered by WhatsApp API</span>
         </div>
       </div>
 

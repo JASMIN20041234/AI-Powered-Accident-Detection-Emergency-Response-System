@@ -10,7 +10,11 @@ import Toast from '../components/ui/Toast';
 import Btn from '../components/ui/Btn';
 import * as incidentsApi from '../api/incidents.api';
 
-const SMS_PROVIDER_LABEL = import.meta.env.VITE_SMS_PROVIDER || 'CallMeBot';
+const SMS_PROVIDER = (import.meta.env.VITE_SMS_PROVIDER || 'twilio').toLowerCase();
+const SMS_PROVIDER_LABEL = SMS_PROVIDER === 'twilio' ? 'Twilio WhatsApp' : 'CallMeBot';
+const isDispatchReady = (contact) => (
+  SMS_PROVIDER === 'twilio' ? Boolean(contact.phone) : Boolean(contact.callmebot_apikey)
+);
 
 export default function DashboardPage({ contacts, setGpsStatus, pendingScenario, onScenarioConsumed }) {
   const { location, status: gpsStatus, statusMessage, refresh } = useGPS();
@@ -66,7 +70,7 @@ export default function DashboardPage({ contacts, setGpsStatus, pendingScenario,
       incidentId = data.id;
     } catch { /* fall through */ }
 
-    const pending = contacts.map((c) => ({ ...c, status: c.callmebot_apikey ? 'sending' : 'skipped' }));
+    const pending = contacts.map((c) => ({ ...c, status: isDispatchReady(c) ? 'sending' : 'skipped' }));
     setDispatch({ results: pending, done: false });
 
     if (incidentId) {
@@ -82,8 +86,8 @@ export default function DashboardPage({ contacts, setGpsStatus, pendingScenario,
   }
 
   async function handleTestSend() {
-    const ready = contacts.filter((c) => c.callmebot_apikey);
-    if (!ready.length) { show('No contacts with API keys configured'); return; }
+    const ready = contacts.filter(isDispatchReady);
+    if (!ready.length) { show('No dispatch-ready contacts configured'); return; }
     show(`Sending test to ${ready.length} contact(s)…`);
     for (const c of ready) {
       try { await incidentsApi.testSend(c.phone, c.callmebot_apikey); } catch { /* non-critical */ }
@@ -91,7 +95,7 @@ export default function DashboardPage({ contacts, setGpsStatus, pendingScenario,
     show(`Test dispatched to ${ready.length} contact(s) ✓`);
   }
 
-  const readyCount = contacts.filter((c) => c.callmebot_apikey).length;
+  const readyCount = contacts.filter(isDispatchReady).length;
 
   return (
     <div className="p-7">
@@ -118,13 +122,15 @@ export default function DashboardPage({ contacts, setGpsStatus, pendingScenario,
 
       {/* 2-col grid */}
       <div className="grid gap-[18px]" style={{ gridTemplateColumns: '2fr 1fr' }}>
-        {/* Map */}
-        <div className="bg-panel border border-line rounded-md overflow-hidden">
-          <div className="flex items-center justify-between px-[18px] py-[14px] border-b border-line">
+        {/* Map — flex-col so the map fills whatever height the sidebar dictates */}
+        <div className="bg-panel border border-line rounded-md overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between px-[18px] py-[14px] border-b border-line shrink-0">
             <h3 className="font-serif font-medium text-base">Live Location</h3>
             <span className="text-[10px] tracking-[0.2em] uppercase text-ink-f">OpenStreetMap · CARTO</span>
           </div>
-          <LiveMap location={location} recenterTrigger={recenter} />
+          <div className="flex-1 min-h-[320px]">
+            <LiveMap location={location} recenterTrigger={recenter} />
+          </div>
         </div>
 
         {/* Sidebar */}
@@ -174,7 +180,7 @@ export default function DashboardPage({ contacts, setGpsStatus, pendingScenario,
       </div>
 
       {alertActive && <AlertOverlay event={currentEvent} location={location} contacts={contacts} onCancel={handleCancel} onExpired={handleExpired} />}
-      {dispatch && <DispatchOverlay results={dispatch.results} done={dispatch.done} onClose={() => setDispatch(null)} />}
+      {dispatch && <DispatchOverlay results={dispatch.results} done={dispatch.done} onClose={() => setDispatch(null)} location={location} event={currentEvent} />}
       <Toast message={toast} />
     </div>
   );

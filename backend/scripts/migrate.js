@@ -19,22 +19,25 @@ async function run() {
       console.log(`  ✓ ${file}`);
     }
 
-    // Seed default admin
-    const { rows } = await client.query(`SELECT id FROM users WHERE username = 'admin'`);
-    if (rows.length === 0) {
-      const hash = await bcrypt.hash('sentinel', 12);
-      await client.query(
-        `INSERT INTO users (username, email, password_hash, role)
-         VALUES ('admin', 'admin@sentinel.local', $1, 'admin')`,
-        [hash]
-      );
-      console.log('\nDefault admin user created:');
-      console.log('  username: admin');
-      console.log('  password: sentinel');
-      console.log('  ⚠  Change this password in production!\n');
-    } else {
-      console.log('\nAdmin user already exists — skipped seed.');
-    }
+    // Seed/repair the demo admin so the documented credentials always work.
+    const defaultAdminPassword = process.env.DEFAULT_ADMIN_PASSWORD || 'sentinel';
+    const hash = await bcrypt.hash(defaultAdminPassword, 12);
+    const existingAdmin = await client.query(`SELECT id FROM users WHERE username = 'admin'`);
+    await client.query(
+      `INSERT INTO users (username, email, password_hash, role)
+       VALUES ('admin', 'admin@sentinel.local', $1, 'admin')
+       ON CONFLICT (username) DO UPDATE
+       SET email = EXCLUDED.email,
+           password_hash = EXCLUDED.password_hash,
+           role = EXCLUDED.role,
+           updated_at = NOW()`,
+      [hash]
+    );
+
+    console.log(`\nDefault admin user ${existingAdmin.rows.length === 0 ? 'created' : 'updated'}:`);
+    console.log('  username: admin');
+    console.log(`  password: ${defaultAdminPassword}`);
+    console.log('  Change this password in production!\n');
 
     console.log('Migrations complete.');
   } finally {

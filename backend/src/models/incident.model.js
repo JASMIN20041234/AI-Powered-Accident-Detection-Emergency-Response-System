@@ -12,6 +12,7 @@ async function findAllByUser(userId) {
              'contact_name',  dl.contact_name,
              'contact_phone', dl.contact_phone,
              'status',        dl.status,
+             'error_message', dl.error_message,
              'sent_at',       dl.sent_at
            ) ORDER BY dl.created_at
          ) FILTER (WHERE dl.id IS NOT NULL),

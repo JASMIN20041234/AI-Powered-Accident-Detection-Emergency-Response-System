@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Circle, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import { useTheme } from '../../contexts/ThemeContext';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -21,13 +22,20 @@ function Recenter({ lat, lng, trigger }) {
   return null;
 }
 
+const TILES = {
+  dark:  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  light: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+};
+
 export default function LiveMap({ location, recenterTrigger }) {
   const { lat, lng, accuracy } = location;
+  const { theme } = useTheme();
   return (
     <MapContainer center={[17.385, 78.4867]} zoom={13}
-      style={{ height: 460, width: '100%', background: '#0a0c10' }}>
+      style={{ height: '100%', minHeight: 320, width: '100%' }}>
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        key={theme}
+        url={TILES[theme] || TILES.dark}
         attribution="&copy; OpenStreetMap &copy; CARTO"
         maxZoom={19}
       />

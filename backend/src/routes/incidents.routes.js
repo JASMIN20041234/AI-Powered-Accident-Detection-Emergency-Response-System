@@ -18,7 +18,7 @@ router.post('/dispatch',
   ctrl.dispatch
 );
 router.post('/test-send',
-  validate({ phone: 'required|string', apikey: 'required|string' }),
+  validate({ phone: 'required|string', apikey: 'string' }),
   ctrl.testSend
 );
 

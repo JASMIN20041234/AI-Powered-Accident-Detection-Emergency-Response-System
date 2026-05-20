@@ -47,10 +47,10 @@ export default function LoginPage() {
           <p className="text-ink-dim mb-9 leading-relaxed">Operator credentials required to manage contacts and monitor telemetry.</p>
 
           <Field label="Username">
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required className={inputCls} />
+            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required autoComplete="off" className={inputCls} />
           </Field>
           <Field label="Password">
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className={inputCls} />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="new-password" className={inputCls} />
           </Field>
 
           <Btn type="submit" block disabled={loading}>{loading ? 'Authenticating…' : 'Authenticate →'}</Btn>

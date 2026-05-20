@@ -27,14 +27,14 @@ export default function LoginPage() {
         style={{ background: 'linear-gradient(135deg, rgba(255,181,71,0.08), rgba(255,90,77,0.04)), #0f1218' }}>
         <div className="absolute inset-0"
           style={{ backgroundImage:'linear-gradient(rgba(255,181,71,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,181,71,0.06) 1px,transparent 1px)', backgroundSize:'40px 40px', maskImage:'radial-gradient(circle at 30% 40%, black, transparent 70%)' }} />
-        <div className="font-serif font-black text-[28px] tracking-tight relative z-10">
+        <div className="font-serif font-black text-[28px] tracking-tight relative z-10" style={{ color: '#e8e9ec' }}>
           SENTINEL<span className="text-accent">.</span>
         </div>
         <div className="relative z-10 my-auto">
-          <h1 className="font-serif font-light text-[64px] leading-[0.95] tracking-[-0.04em] mb-6">
+          <h1 className="font-serif font-light text-[64px] leading-[0.95] tracking-[-0.04em] mb-6" style={{ color: '#e8e9ec' }}>
             Auto-<em className="italic font-medium text-accent not-italic">dispatch</em><br />when seconds<br />matter.
           </h1>
-          <p className="text-ink-dim max-w-[380px] leading-relaxed">
+          <p className="max-w-[380px] leading-relaxed" style={{ color: '#8a93a6' }}>
             Real-time accident detection with live GPS and fully automatic WhatsApp emergency alerts — no taps required.
           </p>
         </div>

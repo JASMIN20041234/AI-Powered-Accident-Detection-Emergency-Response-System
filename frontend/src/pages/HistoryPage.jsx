@@ -10,20 +10,19 @@ function LogRow({ incident }) {
   const dispatched = incident.status === 'dispatched';
 
   return (
-    <div className="bg-panel px-5 py-4 grid items-center border-b border-line last:border-b-0"
-      style={{ gridTemplateColumns: 'auto 1fr auto' }} >
-      <div className={`w-9 h-9 rounded-full bg-bg-2 border flex items-center justify-center font-serif font-bold mr-[18px] ${dispatched ? 'border-accent-2 text-accent-2' : 'border-line-s text-ink-f'}`}>
+    <div className="bg-panel px-4 py-4 flex items-center gap-3 border-b border-line last:border-b-0">
+      <div className={`w-9 h-9 rounded-full bg-bg-2 border flex items-center justify-center font-serif font-bold shrink-0 ${dispatched ? 'border-accent-2 text-accent-2' : 'border-line-s text-ink-f'}`}>
         {dispatched ? '!' : 'x'}
       </div>
-      <div>
-        <div className="font-serif text-[15px] mb-[2px]">{incident.event_type} · {Number(incident.magnitude).toFixed(2)}g</div>
+      <div className="flex-1 min-w-0">
+        <div className="font-serif text-[14px] md:text-[15px] mb-[2px] truncate">{incident.event_type} · {Number(incident.magnitude).toFixed(2)}g</div>
         <div className="text-[11px] text-ink-f">
           {new Date(incident.created_at).toLocaleString()}
-          {incident.latitude && ` · ${Number(incident.latitude).toFixed(4)}, ${Number(incident.longitude).toFixed(4)}`}
+          {incident.latitude && <span className="hidden sm:inline"> · {Number(incident.latitude).toFixed(4)}, {Number(incident.longitude).toFixed(4)}</span>}
         </div>
         {logs.length > 0 && <div className="text-[11px] text-good mt-1">{sent}/{logs.length} delivered</div>}
       </div>
-      <span className={`text-[10px] tracking-[0.2em] uppercase px-[10px] py-1 rounded-full border ${dispatched ? 'text-accent-2 border-accent-2' : 'text-ink-dim border-line-s'}`}>
+      <span className={`shrink-0 text-[10px] tracking-[0.2em] uppercase px-[10px] py-1 rounded-full border ${dispatched ? 'text-accent-2 border-accent-2' : 'text-ink-dim border-line-s'}`}>
         {incident.status}
       </span>
     </div>
@@ -50,10 +49,10 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="p-7">
-      <div className="flex items-end justify-between mb-6 pb-[18px] border-b border-line gap-[18px] flex-wrap">
+    <div className="p-4 md:p-7">
+      <div className="flex items-start justify-between mb-6 pb-[18px] border-b border-line gap-3 flex-wrap">
         <div>
-          <h1 className="font-serif font-normal text-[38px] tracking-tight leading-none">
+          <h1 className="font-serif font-normal text-[26px] md:text-[38px] tracking-tight leading-none">
             Incident <em className="italic text-accent not-italic">history</em>.
           </h1>
           <p className="text-ink-f text-[11px] tracking-[0.2em] uppercase mt-2">Every event with dispatch outcome and delivery status</p>

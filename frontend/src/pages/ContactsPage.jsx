@@ -30,10 +30,10 @@ export default function ContactsPage({ contacts, onContactsChange }) {
   }
 
   return (
-    <div className="p-7">
-      <div className="flex items-end justify-between mb-6 pb-[18px] border-b border-line gap-[18px] flex-wrap">
+    <div className="p-4 md:p-7">
+      <div className="flex items-start justify-between mb-6 pb-[18px] border-b border-line gap-3 flex-wrap">
         <div>
-          <h1 className="font-serif font-normal text-[38px] tracking-tight leading-none">
+          <h1 className="font-serif font-normal text-[26px] md:text-[38px] tracking-tight leading-none">
             Emergency <em className="italic text-accent not-italic">contacts</em>.
           </h1>
           <p className="text-ink-f text-[11px] tracking-[0.2em] uppercase mt-2">Auto-dispatch through {SMS_PROVIDER_LABEL}</p>

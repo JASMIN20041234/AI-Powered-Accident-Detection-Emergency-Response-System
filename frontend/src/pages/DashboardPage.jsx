@@ -98,17 +98,17 @@ export default function DashboardPage({ contacts, setGpsStatus, pendingScenario,
   const readyCount = contacts.filter(isDispatchReady).length;
 
   return (
-    <div className="p-7">
+    <div className="p-4 md:p-7">
       {/* Header */}
-      <div className="flex items-end justify-between mb-6 pb-[18px] border-b border-line gap-[18px] flex-wrap">
+      <div className="flex items-start justify-between mb-6 pb-[18px] border-b border-line gap-3 flex-wrap">
         <div>
-          <h1 className="font-serif font-normal text-[38px] tracking-tight leading-none">Live <em className="italic text-accent not-italic">telemetry</em>.</h1>
+          <h1 className="font-serif font-normal text-[26px] md:text-[38px] tracking-tight leading-none">Live <em className="italic text-accent not-italic">telemetry</em>.</h1>
           <p className="text-ink-f text-[11px] tracking-[0.2em] uppercase mt-2">Real GPS · Auto-Dispatch via WhatsApp</p>
         </div>
-        <div className="flex gap-[10px] flex-wrap">
+        <div className="flex gap-2 flex-wrap">
           <Btn sm ghost onClick={() => setRecenter((n) => n + 1)}>↻ Recenter</Btn>
-          <Btn sm ghost onClick={refresh}>⟳ Refresh GPS</Btn>
-          <Btn sm danger onClick={() => spike(3.6, (p) => triggerDetection('Manual trigger', p))}>⚠ Trigger Accident</Btn>
+          <Btn sm ghost onClick={refresh}>⟳ GPS</Btn>
+          <Btn sm danger onClick={() => spike(3.6, (p) => triggerDetection('Manual trigger', p))}>⚠ Trigger</Btn>
         </div>
       </div>
 
@@ -120,8 +120,8 @@ export default function DashboardPage({ contacts, setGpsStatus, pendingScenario,
         <p className="text-[12px] leading-relaxed text-ink-dim">{statusMessage}</p>
       </div>
 
-      {/* 2-col grid */}
-      <div className="grid gap-[18px]" style={{ gridTemplateColumns: '2fr 1fr' }}>
+      {/* Responsive grid — stacks on mobile, 2-col on large screens */}
+      <div className="grid gap-[18px] grid-cols-1 lg:grid-cols-[2fr_1fr]">
         {/* Map — flex-col so the map fills whatever height the sidebar dictates */}
         <div className="bg-panel border border-line rounded-md overflow-hidden flex flex-col">
           <div className="flex items-center justify-between px-[18px] py-[14px] border-b border-line shrink-0">

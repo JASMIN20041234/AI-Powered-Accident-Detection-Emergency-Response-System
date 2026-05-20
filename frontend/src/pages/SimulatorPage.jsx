@@ -11,9 +11,9 @@ const SCENARIOS = [
 
 export default function SimulatorPage({ onRunScenario }) {
   return (
-    <div className="p-7">
+    <div className="p-4 md:p-7">
       <div className="mb-6 pb-[18px] border-b border-line">
-        <h1 className="font-serif font-normal text-[38px] tracking-tight leading-none">
+        <h1 className="font-serif font-normal text-[26px] md:text-[38px] tracking-tight leading-none">
           AI accident <em className="italic text-accent not-italic">simulator</em>.
         </h1>
         <p className="text-ink-f text-[11px] tracking-[0.2em] uppercase mt-2">Replay realistic scenarios — full pipeline with real GPS and server-side dispatch</p>
